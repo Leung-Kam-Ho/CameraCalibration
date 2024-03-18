@@ -6,7 +6,6 @@ import pickle
 
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
-
 chessboardSize = (9,6)
 frameSize = (640,480)
 
@@ -29,8 +28,8 @@ objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
 
-images = glob.glob('cameraCalibration/images/*.png')
-
+images = glob.glob('./images/*.png')
+# print(images)
 for image in images:
 
     img = cv.imread(image)
@@ -68,7 +67,7 @@ pickle.dump(dist, open( "dist.pkl", "wb" ))
 
 
 ############## UNDISTORTION #####################################################
-
+cameraMatrix, dist = pickle.load(open('calibration.pkl', 'rb'))
 img = cv.imread('cali5.png')
 h,  w = img.shape[:2]
 newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
@@ -80,7 +79,7 @@ dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 
 # crop the image
 x, y, w, h = roi
-dst = dst[y:y+h, x:x+w]
+dst = dst[y:y + h, x:x + w]
 cv.imwrite('caliResult1.png', dst)
 
 
@@ -91,7 +90,7 @@ dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 
 # crop the image
 x, y, w, h = roi
-dst = dst[y:y+h, x:x+w]
+dst = dst[y:y + h, x:x + w]
 cv.imwrite('caliResult2.png', dst)
 
 
@@ -105,4 +104,4 @@ for i in range(len(objpoints)):
     error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2)/len(imgpoints2)
     mean_error += error
 
-print( "total error: {}".format(mean_error/len(objpoints)) )
+print( "total error: {}".format( mean_error / len(objpoints)) )
